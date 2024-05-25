@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Clock from './clock';
 import Cube from './cube';
+import './index.css';
 
 export default () => {
   const [task, setTask] = useState<any>(null);

@@ -1,6 +1,6 @@
 
 export default () => {
     return (
-        <div dangerouslySetInnerHTML={{ __html: "canvas cube" }} />
+        <div dangerouslySetInnerHTML={{ __html: `` }} />
     );
   };
