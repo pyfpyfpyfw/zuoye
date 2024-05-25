@@ -1,109 +1,184 @@
+import React, { useEffect } from 'react';
 
-export default () => {
+const Clock = () => {
+    useEffect(() => {
+        const scriptContent = `
+            function updateClock() {
+                const now = new Date();
+                const seconds = now.getSeconds();
+                const minutes = now.getMinutes();
+                const hours = now.getHours();
+
+                const secondDegrees = ((seconds / 60) * 360) + 90;
+                const minuteDegrees = ((minutes / 60) * 360) + ((seconds / 60) * 6) + 90;
+                const hourDegrees = ((hours / 12) * 360) + ((minutes / 60) * 30) + 90;
+
+                document.querySelector('.mz').style.transform = \`rotate(\${secondDegrees}deg)\`;
+                document.querySelector('.fz').style.transform = \`rotate(\${minuteDegrees}deg)\`;
+                document.querySelector('.sz').style.transform = \`rotate(\${hourDegrees}deg)\`;
+            }
+
+            setInterval(updateClock, 1000);
+            updateClock();
+        `;
+
+        const script = document.createElement('script');
+        script.innerHTML = scriptContent;
+        document.body.appendChild(script);
+
+        return () => {
+            document.body.removeChild(script);
+        };
+    }, []);
+
     return (
-        <div dangerouslySetInnerHTML={{ __html: `<html lang="en">
-
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>clock</title>
-            <style>
-                canvas {
-                    display: block;
-                    margin: 50px auto;
-                }
-            </style>
-        </head>
-        
-        <body>
-            <!-- 增大 canvas 尺寸 -->
-            <canvas id="clock" width="400" height="400"></canvas>
-        
-            <script>
-                // 获取 canvas 元素
-                var canvas = document.getElementById("clock");
-                var ctx = canvas.getContext("2d");
-                var radius = canvas.height / 2;
-        
-                // 将原点移动到 canvas 中心
-                ctx.translate(radius, radius);
-                radius = radius * 0.9;
-        
-                // 绘制时钟外圆
-                function drawClock() {
-                    ctx.beginPath();
-                    ctx.arc(0, 0, radius, 0, 2 * Math.PI);
-                    ctx.fillStyle = 'white'; 
-                    ctx.fill();
-                    ctx.strokeStyle = 'black';
-                    ctx.stroke();
-        
-                    
-        
-                    // 绘制刻度
-                    for (var i = 1; i <= 12; i++) {
-                        var angle = (i - 3) * Math.PI / 6;
-                        var thick = i % 3 === 0 ? 4 : 2;
-                        // 加粗刻度线
-                        ctx.lineWidth = thick;
-                        ctx.beginPath();
-                        var x1 = (radius - 10) * Math.cos(angle);
-                        var y1 = (radius - 10) * Math.sin(angle);
-                        var x2 = (radius - 38) * Math.cos(angle);
-                        var y2 = (radius - 38) * Math.sin(angle);
-                        ctx.moveTo(x1, y1);
-                        ctx.lineTo(x2, y2);
-                        ctx.stroke();
+        <div dangerouslySetInnerHTML={{ __html: `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Clock</title>
+                <style>
+                    body {
+                        background-color: #e0f7fa;
+                        margin: 0;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                        flex-direction: column;
+                        font-family: Arial, sans-serif;
                     }
-                }
-        
-                // 绘制时针、分针和秒针
-                function drawTime() {
-                    var now = new Date();
-                    //获取当前的日期时间
-                    var hour = now.getHours();
-                    var minute = now.getMinutes();
-                    var second = now.getSeconds();
-        
-                    // 时针
-                    hour = hour % 12;
-                    hour = (hour * Math.PI / 6) + (minute * Math.PI / (6 * 60)) + (second * Math.PI / (6 * 60 * 60));//设置指针位置，弧度绘制
-                    drawHand(ctx, hour, radius * 0.4, radius * 0.07);
-                    // 分针
-                    minute = (minute * Math.PI / 30) + (second * Math.PI / (30 * 60));
-                    drawHand(ctx, minute, radius * 0.6, radius * 0.05);
-        
-                    // 秒针
-                    second = (second * Math.PI / 30);
-                    drawHand(ctx, second, radius * 0.7, radius * 0.02);
-                }
-        
-                // 绘制指针
-                function drawHand(ctx, pos, length, width) {
-                    ctx.beginPath();
-                    ctx.lineWidth = 4;
-        
-                    ctx.moveTo(0, 0);
-                    ctx.rotate(pos);
-                    ctx.lineTo(0, -length);
-                    ctx.stroke();
-                    ctx.rotate(-pos);
-                }
-        
-                // 每秒更新时钟
-                setInterval(function () {
-                    ctx.clearRect(-radius, -radius, canvas.width, canvas.height);
-                    drawClock();
-                    drawTime();
-                }, 1000);
-        
-                // 初始绘制
-                drawClock();
-                drawTime();
-            </script>
-        </body>
-        
-        </html>
+            
+                    #clock {
+                        width: 300px;
+                        height: 300px;
+                        background-color: white;
+                        border: solid 10px #00796b;
+                        border-radius: 50%;
+                        position: relative;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                        margin-top: 20px;
+                    }
+            
+                    #hours {
+                        list-style: none;
+                        position: absolute;
+                        padding: 0;
+                        margin: 0;
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+            
+                    li {
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+            
+                    li p {
+                        margin: 0;
+                        width: 20px;
+                        text-align: center;
+                        transform: translateY(-140px);
+                        color: #00796b;
+                        font-weight: bold;
+                    }
+            
+                    .shizhen,
+                    .fenzhen,
+                    .miaozhen {
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+            
+                    .sz,
+                    .fz,
+                    .mz {
+                        position: absolute;
+                        bottom: 50%;
+                        transform-origin: bottom;
+                    }
+            
+                    .sz {
+                        width: 6px;
+                        height: 90px;
+                        background-color: #00796b;
+                        border-radius: 3px;
+                    }
+            
+                    .fz {
+                        width: 4px;
+                        height: 120px;
+                        background-color: #004d40;
+                        border-radius: 2px;
+                    }
+            
+                    .mz {
+                        width: 2px;
+                        height: 140px;
+                        background-color: #d32f2f;
+                    }
+            
+                    .xiaoyuan {
+                        position: absolute;
+                        width: 15px;
+                        height: 15px;
+                        background-color: #00796b;
+                        border-radius: 50%;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                    }
+                </style>
+            </head>
+            
+            <body>
+                <div id="clock">
+                    <ul id="hours">
+                        <li style="transform: rotate(30deg);"><p style="transform: rotate(-30deg);">1</p></li>
+                        <li style="transform: rotate(60deg);"><p style="transform: rotate(-60deg);">2</p></li>
+                        <li style="transform: rotate(90deg);"><p style="transform: rotate(-90deg);">3</p></li>
+                        <li style="transform: rotate(120deg);"><p style="transform: rotate(-120deg);">4</p></li>
+                        <li style="transform: rotate(150deg);"><p style="transform: rotate(-150deg);">5</p></li>
+                        <li style="transform: rotate(180deg);"><p style="transform: rotate(-180deg);">6</p></li>
+                        <li style="transform: rotate(210deg);"><p style="transform: rotate(-210deg);">7</p></li>
+                        <li style="transform: rotate(240deg);"><p style="transform: rotate(-240deg);">8</p></li>
+                        <li style="transform: rotate(270deg);"><p style="transform: rotate(-270deg);">9</p></li>
+                        <li style="transform: rotate(300deg);"><p style="transform: rotate(-300deg);">10</p></li>
+                        <li style="transform: rotate(330deg);"><p style="transform: rotate(-330deg);">11</p></li>
+                        <li style="transform: rotate(0deg);"><p style="transform: rotate(0deg);">12</p></li>
+                    </ul>
+            
+                    <div class="shizhen">
+                        <div class="sz"></div>
+                    </div>
+            
+                    <div class="fenzhen">
+                        <div class="fz"></div>
+                    </div>
+            
+                    <div class="miaozhen">
+                        <div class="mz"></div>
+                    </div>
+            
+                    <div class="xiaoyuan"></div>
+                </div>
+            </body>
+            </html>
         ` }} />
     );
-  };
+};
+
+export default Clock;
